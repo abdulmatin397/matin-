@@ -11,6 +11,9 @@ import { AiStudioLab } from './components/AiStudioLab';
 import { AboutSection } from './components/AboutSection';
 import { TestimonialsSection } from './components/TestimonialsSection';
 import { ContactSection } from './components/ContactSection';
+import { BlogSection } from './components/BlogSection';
+import { SkillsSection } from './components/SkillsSection';
+import { ProfileView } from './components/ProfileView';
 import { LoginView } from './components/LoginView';
 import { StudentDashboard } from './components/StudentDashboard';
 import { AdminDashboard } from './components/AdminDashboard';
@@ -34,6 +37,8 @@ const MainContent: React.FC = () => {
         {currentView === 'home' && (
           <>
             <Hero />
+            <BlogSection />
+            <SkillsSection />
             <FeaturedTrainingSection />
             <CoursesSection />
             <ServicesSection />
@@ -43,6 +48,18 @@ const MainContent: React.FC = () => {
             <TestimonialsSection />
             <ContactSection />
           </>
+        )}
+
+        {currentView === 'blog' && (
+          <div className="pt-4">
+            <BlogSection />
+          </div>
+        )}
+
+        {currentView === 'skills' && (
+          <div className="pt-4">
+            <SkillsSection />
+          </div>
         )}
 
         {currentView === 'courses' && (
@@ -94,6 +111,7 @@ const MainContent: React.FC = () => {
         )}
 
         {currentView === 'login' && <LoginView />}
+        {currentView === 'profile' && <ProfileView />}
         {currentView === 'student-dashboard' && <StudentDashboard />}
         {currentView === 'admin-dashboard' && <AdminDashboard />}
       </main>

@@ -1,7 +1,8 @@
-import { Course, TrainingSession, Service, PortfolioProject, Testimonial, WebsiteSettings, Enrollment, Certificate } from '../types';
+import { Course, TrainingSession, Service, PortfolioProject, Testimonial, WebsiteSettings, Enrollment, Certificate, BlogPost } from '../types';
 
 export const initialSettings: WebsiteSettings = {
   academyName: 'Digital Skills Academy',
+  blogName: 'Matin Blog',
   tagline: 'Learn Digital Skills. Build Your Future.',
   directorName: '[YOUR NAME]', // Easily updated in Admin or config
   directorPhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
@@ -563,3 +564,148 @@ export const initialCertificates: Certificate[] = [
     qrVerified: true,
   },
 ];
+
+export const initialBlogPosts: BlogPost[] = [
+  {
+    id: 'post-1',
+    title: 'Top 7 In-Demand Digital Skills Every Ghanaian Graduate Needs in 2026',
+    slug: 'top-digital-skills-ghana-2026',
+    excerpt: 'Discover why computer proficiency, modern web development, prompt engineering, and digital marketing are replacing traditional resume bullet points across Ghana.',
+    content: `The employment landscape in Ghana and across West Africa is experiencing a seismic shift. Companies in Accra, Kumasi, and remote global employers are no longer hiring based purely on degrees; they are actively seeking demonstrable digital competencies.
+
+Here are the top seven digital skills that can accelerate your career or help you launch a thriving online business:
+
+### 1. Hands-On Computer Literacy & Cloud Workflows
+Beyond simple word processing, today's workplace requires mastering file structures, cloud storage with Google Workspace, document security, and keyboard productivity.
+
+### 2. Website Development (HTML, CSS & Modern Frameworks)
+Every Ghanaian enterprise, law firm, clinic, school, and boutique needs a credible web home. Developers who understand responsive layouts and local domain hosting earn anywhere between GH₵ 1,500 and GH₵ 6,000 per website.
+
+### 3. Generative AI & Prompt Engineering
+Tools like Google Gemini and ChatGPT are force multipliers. Learning structured prompting allows a single person to produce reports, research papers, customer proposals, and translations in minutes.
+
+### 4. AI Content Creation & Visual Production
+Creating studio-quality social media flyers, commercial mockups, and video scripts using AI saves thousands of Cedis in production costs for local businesses.
+
+### 5. Meta & Google Digital Advertising
+Knowing how to set up Meta Business Suite and fund ad budgets with Mobile Money (MoMo) is one of the highest-paying freelance services in Accra right now.
+
+### 6. Advanced Microsoft Excel & Data Summarization
+Office managers and analysts who can craft dynamic VLOOKUP formulas, Pivot tables, and revenue forecasting dashboards are indispensable.
+
+### 7. Online Business & Payment Gateway Integration
+Setting up Paystack, Hubtel, and automated WhatsApp order notifications turns local shops into 24/7 revenue engines.
+
+At Digital Skills Academy, our hands-on bootcamps equip you with these exact practical tools from Day 1.`,
+    featuredImage: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1000&q=80',
+    category: 'Career & Tech',
+    author: 'Matin • Tech Educator',
+    authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    date: '06 Oct 2026',
+    readTime: '5 min read',
+    tags: ['Digital Skills', 'Ghana Tech', 'Career Advice', 'AI'],
+    isFeatured: true,
+    views: 1420,
+  },
+  {
+    id: 'post-2',
+    title: 'How Generative AI is Helping Ghanaian Entrepreneurs Triple Social Media Sales',
+    slug: 'how-generative-ai-helps-ghanaian-entrepreneurs',
+    excerpt: 'A practical breakdown of how small business owners in Makola, Osu, and Kumasi use AI image generation and copy prompts to create viral marketing collateral.',
+    content: `Small business marketing in Ghana has traditionally been limited by expensive graphic design rates and photography studios. Today, generative AI has leveled the playing field.
+
+### Rapid Flyer & Product Staging
+Using models like Gemini 3 Pro, Ghanaian fashion designers and skincare artisans can now stage their goods against luxurious marble backgrounds, warm sunset lighting, or contemporary African motifs without spending thousands on photo shoots.
+
+### 10x Copywriting Speed
+Crafting catchy WhatsApp broadcast messages, Instagram hooks, and Facebook captions used to take hours. With prompt engineering, entrepreneurs can input:
+*"Generate 5 viral TikTok hooks for my Ghanaian Shea butter hair cream targeting young women in Accra"* and receive market-ready scripts instantly.
+
+### Automated Customer Inquiries
+Connecting AI-assisted message drafts to WhatsApp Business allows shop owners to respond professionally within seconds, closing deals faster.`,
+    featuredImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1000&q=80',
+    category: 'AI & Automation',
+    author: 'Matin • Tech Educator',
+    authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    date: '04 Oct 2026',
+    readTime: '4 min read',
+    tags: ['AI Tools', 'Marketing', 'E-Commerce', 'WhatsApp'],
+    isFeatured: true,
+    views: 980,
+  },
+  {
+    id: 'post-3',
+    title: 'The Complete Step-by-Step Guide to Hosting Your First Website in Ghana',
+    slug: 'guide-to-hosting-website-in-ghana',
+    excerpt: 'Learn the differences between .com and .com.gh domains, choosing affordable cPanel hosting, configuring SSL certificates, and going live.',
+    content: `Building a website locally on your computer is only half the journey. Launching it so that clients in Ghana and across the globe can access it requires domain registration and hosting.
+
+### Choosing Your Domain Extension
+- **.com**: Global recognition, ideal for international trade, exports, or digital agencies.
+- **.com.gh**: Instantly identifies your business as a trusted Ghanaian entity.
+
+### Setting Up cPanel & Secure SSL
+Security is paramount. Modern web browsers flag sites without an SSL certificate (https://) as "Not Secure," which scares away Ghanaian buyers. Always activate free Let's Encrypt SSL.
+
+### Connecting Local Payment Gateways
+If you are running an online shop, connecting Paystack allows your customers to pay directly from their MTN Mobile Money, Telecel Cash, or local bank card seamlessly.
+
+Join our 8-Week Website Development program at Digital Skills Academy to build and launch your first commercial client website under direct mentorship!`,
+    featuredImage: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=1000&q=80',
+    category: 'Web Development',
+    author: 'Matin • Web Developer',
+    authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    date: '01 Oct 2026',
+    readTime: '6 min read',
+    tags: ['Web Dev', 'Hosting', 'Domains', 'Ghana Web'],
+    isFeatured: false,
+    views: 840,
+  },
+  {
+    id: 'post-4',
+    title: 'Integrating Mobile Money (MTN MoMo & Telecel) on Modern Websites',
+    slug: 'integrating-mobile-money-ghana-websites',
+    excerpt: 'Over 85% of online transactions in Ghana happen via Mobile Money. Here is how modern businesses accept payments effortlessly.',
+    content: `In Ghana, card penetration is growing, but Mobile Money remains the absolute undisputed king of everyday commerce. If your website does not support MTN MoMo and Telecel Cash, you are leaving substantial revenue on the table.
+
+### How Payment Gateways Work
+Payment aggregators like Paystack, Hubtel, and Flutterwave bridge your website with telecom networks. When a customer inputs their phone number, they receive an instant USSD prompt on their mobile phone to approve the transaction with their MoMo PIN.
+
+### Instant Webhooks & WhatsApp Confirmation
+Once payment is approved, your website server receives a secure webhook, automatically updates the customer's order to "Paid", and can trigger an automated WhatsApp alert with their receipt.`,
+    featuredImage: 'https://images.unsplash.com/photo-1556742049-0a67e557224d?auto=format&fit=crop&w=1000&q=80',
+    category: 'E-Commerce',
+    author: 'Matin • Tech Educator',
+    authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    date: '28 Sep 2026',
+    readTime: '4 min read',
+    tags: ['Mobile Money', 'Fintech', 'Paystack', 'Ghana'],
+    isFeatured: false,
+    views: 1120,
+  },
+  {
+    id: 'post-5',
+    title: 'Mastering AI Image Prompts for African Fashion & Product Photography',
+    slug: 'mastering-ai-prompts-african-fashion',
+    excerpt: 'How to specify aspect ratios (1:1, 9:16, 16:9), lighting, and authentic African cultural aesthetics with Gemini 3 Pro.',
+    content: `Generative models often default to generic western aesthetics unless guided with intentional cultural and lighting keywords.
+
+### Prompt Formula for Authentic African Visuals
+1. **Subject:** Specify ethnic identity, attire (e.g. subtle Kente, modern Ghanaian Batakari, contemporary Accra streetwear).
+2. **Environment:** Modern Ghanaian corporate high-rises, sunlit Osu cafes, or minimalist studio podiums.
+3. **Lighting & Camera:** "Soft diffused studio lighting, 85mm f/1.4 lens, natural skin tones, photorealistic 8k".
+4. **Aspect Ratio Control:** Use 1:1 for Instagram posts, 9:16 for TikTok/Reels, and 16:9 for YouTube and website hero banners.
+
+Test this right now in our built-in **AI Studio Lab** on this website!`,
+    featuredImage: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1000&q=80',
+    category: 'AI & Automation',
+    author: 'Matin • Creative Lead',
+    authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    date: '24 Sep 2026',
+    readTime: '5 min read',
+    tags: ['AI Art', 'Gemini', 'Prompts', 'Design'],
+    isFeatured: false,
+    views: 750,
+  },
+];
+

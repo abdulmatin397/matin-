@@ -124,8 +124,26 @@ export interface ContactMessage {
   status: 'new' | 'replied' | 'in-progress';
 }
 
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  featuredImage: string;
+  category: string;
+  author: string;
+  authorAvatar?: string;
+  date: string;
+  readTime: string;
+  tags: string[];
+  isFeatured?: boolean;
+  views?: number;
+}
+
 export interface WebsiteSettings {
   academyName: string;
+  blogName?: string;
   tagline: string;
   directorName: string; // [YOUR NAME]
   directorPhoto: string; // [YOUR PHOTO]

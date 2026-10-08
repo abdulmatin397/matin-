@@ -10,6 +10,7 @@ import {
   Testimonial,
   ContactMessage,
   WebsiteSettings,
+  BlogPost,
 } from '../types';
 import {
   initialCourses,
@@ -20,6 +21,7 @@ import {
   initialSettings,
   initialEnrollments,
   initialCertificates,
+  initialBlogPosts,
 } from '../data/initialData';
 
 interface AppContextType {
@@ -35,6 +37,9 @@ interface AppContextType {
   certificates: Certificate[];
   contactMessages: ContactMessage[];
   settings: WebsiteSettings;
+  blogPosts: BlogPost[];
+  selectedBlogPost: BlogPost | null;
+  setSelectedBlogPost: (post: BlogPost | null) => void;
   selectedCourse: Course | null;
   setSelectedCourse: (course: Course | null) => void;
   isEnrollModalOpen: boolean;
@@ -66,6 +71,9 @@ interface AppContextType {
   deleteCertificate: (id: string) => void;
   addContactMessage: (msg: Omit<ContactMessage, 'id' | 'createdAt' | 'status'>) => void;
   updateContactMessageStatus: (id: string, status: ContactMessage['status']) => void;
+  addBlogPost: (post: Omit<BlogPost, 'id' | 'views'>) => BlogPost;
+  updateBlogPost: (id: string, updated: Partial<BlogPost>) => void;
+  deleteBlogPost: (id: string) => void;
   updateSettings: (newSettings: Partial<WebsiteSettings>) => void;
   generateWhatsAppUrl: (params?: {
     courseTitle?: string;
@@ -90,6 +98,7 @@ const STORAGE_KEYS = {
   CERTIFICATES: 'dsa_certificates_v1',
   MESSAGES: 'dsa_messages_v1',
   SETTINGS: 'dsa_settings_v1',
+  BLOG_POSTS: 'dsa_blog_posts_v1',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -173,6 +182,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.BLOG_POSTS);
+      return saved ? JSON.parse(saved) : initialBlogPosts;
+    } catch {
+      return initialBlogPosts;
+    }
+  });
+
+  const [selectedBlogPost, setSelectedBlogPost] = useState<BlogPost | null>(null);
+
   const [settings, setSettings] = useState<WebsiteSettings>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.SETTINGS);
@@ -250,6 +270,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       console.warn('LocalStorage error:', e);
     }
   }, [contactMessages]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.BLOG_POSTS, JSON.stringify(blogPosts));
+    } catch (e) {
+      console.warn('LocalStorage error:', e);
+    }
+  }, [blogPosts]);
 
   useEffect(() => {
     try {
@@ -460,6 +488,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setContactMessages(prev => prev.map(m => (m.id === id ? { ...m, status } : m)));
   };
 
+  // Blog Posts CRUD
+  const addBlogPost = (postData: Omit<BlogPost, 'id' | 'views'>) => {
+    const newPost: BlogPost = {
+      ...postData,
+      id: `post-${Date.now()}`,
+      views: 1,
+    };
+    setBlogPosts(prev => [newPost, ...prev]);
+    return newPost;
+  };
+
+  const updateBlogPost = (id: string, updated: Partial<BlogPost>) => {
+    setBlogPosts(prev => prev.map(p => (p.id === id ? { ...p, ...updated } : p)));
+  };
+
+  const deleteBlogPost = (id: string) => {
+    setBlogPosts(prev => prev.filter(p => p.id !== id));
+  };
+
   // Settings
   const updateSettings = (newSettings: Partial<WebsiteSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
@@ -480,6 +527,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         certificates,
         contactMessages,
         settings,
+        blogPosts,
+        selectedBlogPost,
+        setSelectedBlogPost,
         selectedCourse,
         setSelectedCourse,
         isEnrollModalOpen,
@@ -511,6 +561,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteCertificate,
         addContactMessage,
         updateContactMessageStatus,
+        addBlogPost,
+        updateBlogPost,
+        deleteBlogPost,
         updateSettings,
         generateWhatsAppUrl,
       }}

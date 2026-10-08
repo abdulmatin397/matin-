@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Course, TrainingSession, Enrollment, Testimonial, PortfolioProject, WebsiteSettings } from '../types';
+import { Course, TrainingSession, Enrollment, Testimonial, PortfolioProject, WebsiteSettings, BlogPost } from '../types';
 import {
   Shield,
   Users,
@@ -22,7 +22,10 @@ import {
   MessageCircle,
   DollarSign,
   Lock,
-  ArrowRight
+  ArrowRight,
+  Image as ImageIcon,
+  Sparkles,
+  Upload
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
@@ -52,11 +55,17 @@ export const AdminDashboard: React.FC = () => {
     updateContactMessageStatus,
     settings,
     updateSettings,
-    generateWhatsAppUrl
+    generateWhatsAppUrl,
+    blogPosts,
+    addBlogPost,
+    updateBlogPost,
+    deleteBlogPost,
+    setCurrentView
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
     | 'overview'
+    | 'blog'
     | 'courses'
     | 'enrollments'
     | 'training'
@@ -66,7 +75,21 @@ export const AdminDashboard: React.FC = () => {
     | 'portfolio'
     | 'messages'
     | 'settings'
-  >('overview');
+  >('blog');
+
+  // Blog post modal/creation state
+  const [isBlogModalOpen, setIsBlogModalOpen] = useState(false);
+  const [blogForm, setBlogForm] = useState<Partial<BlogPost>>({
+    title: '',
+    category: 'Career & Tech',
+    excerpt: '',
+    content: '',
+    featuredImage: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1000&q=80',
+    author: 'Matin • Tech Educator',
+    readTime: '5 min read',
+    tags: ['Tech', 'Digital Skills', 'Ghana'],
+    isFeatured: true,
+  });
 
   // Course modal state
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
@@ -97,6 +120,48 @@ export const AdminDashboard: React.FC = () => {
   // Settings form local state
   const [settingsForm, setSettingsForm] = useState<WebsiteSettings>(settings);
   const [savedSettingsNotice, setSavedSettingsNotice] = useState(false);
+
+  const handleCreateBlogPost = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!blogForm.title) return;
+    addBlogPost({
+      title: blogForm.title,
+      slug: (blogForm.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      category: blogForm.category || 'Career & Tech',
+      excerpt: blogForm.excerpt || '',
+      content: blogForm.content || '',
+      featuredImage: blogForm.featuredImage || 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1000&q=80',
+      author: blogForm.author || 'Matin • Tech Educator',
+      authorAvatar: settings.directorPhoto,
+      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      readTime: blogForm.readTime || '4 min read',
+      tags: typeof blogForm.tags === 'string' ? (blogForm.tags as string).split(',').map((t: string) => t.trim()) : (blogForm.tags || ['Ghana', 'Tech']),
+      isFeatured: Boolean(blogForm.isFeatured),
+    });
+    setIsBlogModalOpen(false);
+    setBlogForm({
+      title: '',
+      category: 'Career & Tech',
+      excerpt: '',
+      content: '',
+      featuredImage: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1000&q=80',
+      author: 'Matin • Tech Educator',
+      readTime: '5 min read',
+      tags: ['Tech', 'Digital Skills', 'Ghana'],
+      isFeatured: false,
+    });
+  };
+
+  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBlogForm(prev => ({ ...prev, featuredImage: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Protected Role check
   if (!currentUser || currentUser.role !== 'admin') {
@@ -208,6 +273,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="flex items-center gap-1.5 overflow-x-auto pb-4 mb-6 border-b border-slate-800 scrollbar-none">
           {[
             { id: 'overview', label: 'Dashboard', icon: Shield },
+            { id: 'blog', label: `Blog & Images (${blogPosts.length})`, icon: ImageIcon },
             { id: 'enrollments', label: `Enrollments (${enrollments.length})`, icon: FileText },
             { id: 'courses', label: `Courses (${courses.length})`, icon: BookOpen },
             { id: 'training', label: 'Training Sessions', icon: Calendar },
@@ -236,6 +302,105 @@ export const AdminDashboard: React.FC = () => {
             );
           })}
         </div>
+
+        {/* Tab: Blog & Featured Images */}
+        {activeTab === 'blog' && (
+          <div className="space-y-6">
+            <div className="p-6 rounded-3xl bg-[#091533] border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <span className="text-xs font-bold uppercase text-amber-400">Content Studio &amp; Featured Images</span>
+                <h3 className="text-xl sm:text-2xl font-black text-white font-heading">
+                  Blog Posts &amp; Image Publishing
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Publish articles, upload or paste featured image URLs, and preview in real-time.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsBlogModalOpen(true)}
+                  className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create Post with Featured Image</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setCurrentView('ai-studio');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>AI Studio Lab</span>
+                </button>
+              </div>
+            </div>
+
+            {/* List of Blog Posts with Featured Images */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {blogPosts.map((post) => (
+                <div key={post.id} className="p-5 rounded-2xl bg-[#091533] border border-slate-800 space-y-4 flex flex-col justify-between">
+                  <div>
+                    {/* Featured Image Thumbnail */}
+                    <div className="relative h-44 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 mb-3">
+                      <img
+                        src={post.featuredImage}
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold bg-slate-900/90 text-amber-400 border border-amber-400/30">
+                        {post.category}
+                      </span>
+                      {post.isFeatured && (
+                        <span className="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-black bg-amber-500 text-slate-950">
+                          FEATURED
+                        </span>
+                      )}
+                    </div>
+
+                    <h4 className="text-base font-bold text-white font-heading line-clamp-2 leading-snug">
+                      {post.title}
+                    </h4>
+                    <p className="text-xs text-slate-400 line-clamp-2 mt-1">
+                      {post.excerpt}
+                    </p>
+                    <p className="text-[11px] text-slate-500 mt-2">
+                      Published: {post.date} • {post.readTime}
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                    <button
+                      onClick={() => {
+                        const newImg = prompt("Enter new Featured Image URL for this post:", post.featuredImage);
+                        if (newImg && newImg.trim()) {
+                          updateBlogPost(post.id, { featuredImage: newImg.trim() });
+                        }
+                      }}
+                      className="text-xs text-amber-400 hover:underline font-semibold flex items-center gap-1 cursor-pointer"
+                    >
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Change Image</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (confirm(`Delete blog post "${post.title}"?`)) {
+                          deleteBlogPost(post.id);
+                        }
+                      }}
+                      className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-950 cursor-pointer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Tab 1: Overview */}
         {activeTab === 'overview' && (
@@ -956,6 +1121,181 @@ export const AdminDashboard: React.FC = () => {
                   className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold cursor-pointer"
                 >
                   Issue Certificate
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Create Blog Post with Featured Image */}
+      {isBlogModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
+          <div className="bg-[#091533] border-2 border-amber-500/40 rounded-3xl max-w-2xl w-full p-6 sm:p-7 space-y-4 my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+              <h3 className="text-xl font-bold text-white font-heading flex items-center gap-2">
+                <ImageIcon className="w-5 h-5 text-amber-400" />
+                <span>Create Post with Featured Image</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsBlogModalOpen(false)}
+                className="text-slate-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateBlogPost} className="space-y-4 text-xs">
+              <div>
+                <label className="text-slate-300 block mb-1 font-semibold">
+                  Post Title <span className="text-rose-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 10 Essential Tech Skills for Ghanaian Freelancers in 2026"
+                  value={blogForm.title}
+                  onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })}
+                  className="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white focus:border-amber-400 focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-slate-300 block mb-1 font-semibold">Category</label>
+                  <select
+                    value={blogForm.category}
+                    onChange={(e) => setBlogForm({ ...blogForm, category: e.target.value })}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white"
+                  >
+                    <option value="Career & Tech">Career &amp; Tech</option>
+                    <option value="AI & Automation">AI &amp; Automation</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="E-Commerce">E-Commerce</option>
+                    <option value="Graphic Design">Graphic Design</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-slate-300 block mb-1 font-semibold">Estimated Read Time</label>
+                  <input
+                    type="text"
+                    value={blogForm.readTime}
+                    onChange={(e) => setBlogForm({ ...blogForm, readTime: e.target.value })}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Featured Image Management */}
+              <div className="p-4 rounded-2xl bg-slate-900 border border-amber-500/30 space-y-3">
+                <label className="text-slate-200 block font-bold text-xs flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-amber-400">
+                    <ImageIcon className="w-4 h-4" />
+                    Featured Image URL or File Upload
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsBlogModalOpen(false);
+                      setCurrentView('ai-studio');
+                    }}
+                    className="text-[10px] text-blue-400 hover:underline flex items-center gap-1"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>Generate in AI Studio Lab</span>
+                  </button>
+                </label>
+
+                {/* URL Input */}
+                <input
+                  type="text"
+                  placeholder="https://images.unsplash.com/photo-..."
+                  value={blogForm.featuredImage}
+                  onChange={(e) => setBlogForm({ ...blogForm, featuredImage: e.target.value })}
+                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono"
+                />
+
+                {/* File Upload Option */}
+                <div className="flex items-center gap-2">
+                  <label className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold cursor-pointer border border-slate-700 flex items-center gap-1.5">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Upload Local Image File</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  <span className="text-[11px] text-slate-400">JPG, PNG, WebP supported</span>
+                </div>
+
+                {/* Live Image Preview */}
+                {blogForm.featuredImage && (
+                  <div className="relative h-36 rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
+                    <img
+                      src={blogForm.featuredImage}
+                      alt="Featured Image Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold bg-slate-900/90 text-amber-400">
+                      Live Preview
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="text-slate-300 block mb-1 font-semibold">Excerpt / Summary</label>
+                <textarea
+                  rows={2}
+                  required
+                  placeholder="Short introductory summary for cards..."
+                  value={blogForm.excerpt}
+                  onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })}
+                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white"
+                ></textarea>
+              </div>
+
+              <div>
+                <label className="text-slate-300 block mb-1 font-semibold">Full Article Content</label>
+                <textarea
+                  rows={6}
+                  required
+                  placeholder="Write the full body of the post here..."
+                  value={blogForm.content}
+                  onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
+                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-normal leading-relaxed"
+                ></textarea>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="isFeatured"
+                  checked={blogForm.isFeatured}
+                  onChange={(e) => setBlogForm({ ...blogForm, isFeatured: e.target.checked })}
+                  className="rounded text-amber-500"
+                />
+                <label htmlFor="isFeatured" className="text-slate-300 text-xs cursor-pointer font-semibold">
+                  Pin as Top Featured Editorial on Matin Blog
+                </label>
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setIsBlogModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold cursor-pointer shadow"
+                >
+                  Publish Post &amp; Featured Image
                 </button>
               </div>
             </form>
