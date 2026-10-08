@@ -1,0 +1,6 @@
+{
+  "name": "Digital Skills Academy",
+  "description": "Learn Digital Skills. Build Your Future. Practical digital skills training in computer literacy, AI, web development, digital marketing, graphic design and custom web solutions in Ghana.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
